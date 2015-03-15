@@ -1,0 +1,298 @@
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: sans-serif;
+	font-size: 1em;
+}
+/* ************* */
+/*  Main layout  */
+/* ************* */
+
+/* Layout from http://stackoverflow.com/a/21652935 */
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.container {
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+
+.content {
+	display: table-row;
+	height: 100%;
+    margin-top: 15px;
+}
+
+.content-body {
+	display: table-cell;
+	padding: 10px;
+    margin-top: 15px;
+	background: ghostwhite;
+    border: outset;
+}
+
+.header {
+	padding: 10px 10px;
+    background: ghostwhite;
+    border: outset;
+}
+
+.footer {
+	padding: 10px 10px;
+	background: lightgray;
+}
+
+/* *************** */
+/*  Header layout  */
+/* *************** */
+/* Layout from http://stackoverflow.com/a/15817129 */
+.control-wrapper {
+	clear: both;
+	display: table;
+	width: 100%;
+    background: -webkit-linear-gradient(ghostwhite, #f2fcff); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(ghostwhite, #f2fcff); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(ghostwhite, #f2fcff); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(ghostwhite, #f2fcff); /* Standard syntax */
+}
+
+.controls {
+	width: 80%;
+	display: table-cell;
+}
+
+.title {
+	width: 20%;
+	padding: 20px;
+    padding-left: 120px;
+	min-width: 200px;
+	display: table-cell;
+}
+
+#version {
+    font-size: 0.5em;
+    color: #b7b7b7;
+    margin-left: 0.1em;
+}
+
+.title img {
+    width: 3em;
+    height: 3em;
+    float:  left;
+}
+
+#name {
+    color: darkblue;
+    font-family: sans-serif;
+    font-size: 2em;
+    font-weight: bold;
+    margin-left: 1.6em;
+    margin-top: 0.2em;
+
+}
+
+#reposelect {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+#homedir {
+    padding-right: 20px;
+    font-weight:  bold;
+}
+
+
+/* ************** */
+/*  Graph styles  */
+/* ************** */
+.link line {
+	stroke: #5b5b5b;
+}
+
+.link text {
+	pointer-events: none;
+	font: 14px sans-serif;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+.node text {
+	pointer-events: none;
+	font: 10px sans-serif;
+	text-anchor: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+#graph {
+	height: 100%;
+	width: 100%;
+	background: -webkit-linear-gradient(ghostwhite, #f2fcff); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(ghostwhite, #f2fcff); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(ghostwhite, #f2fcff); /* For Firefox 3.6 to 15 */
+	background: linear-gradient(ghostwhite, #f2fcff); /* Standard syntax */
+}
+
+#graph svg {
+	height: 100%;
+	width: 100%;
+	vertical-align: top;
+}
+
+/* *************** */
+/*  Button layout  */
+/* *************** */
+/* Layout from http://code.tutsplus.com/tutorials/build-kick-ass-practical-css3-buttons--net-11702 */
+.button {
+    width: 200px;
+    height: 50px;
+    line-height: 50px;
+    color: white;
+    text-decoration: none;
+    font-size: 1em;
+    font-family: helvetica, arial;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+    position: relative;
+    float: right;
+    cursor: inherit;
+
+    /* BACKGROUND GRADIENTS */
+    background: #014464;
+    background: -moz-linear-gradient(top, #0D658E, #0C577A 50%, #014D71 51%, #003E5C);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #0E658E), color-stop(.5, #0C577A), color-stop(.5, #014D71), to(#003E5C));
+
+    /* BORDER RADIUS */
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+
+    border: 1px solid #368DBE;
+    border-top: 1px solid #c3d6df;
+
+    /* TEXT SHADOW */
+
+    text-shadow: 1px 1px 1px black;
+
+    /* BOX SHADOW */
+    -moz-box-shadow: 0 1px 3px black;
+    -webkit-box-shadow: 0 1px 3px black;
+    box-shadow: 0 1px 3px black;
+}
+
+/* WHILE HOVERED */
+.button:hover {
+    background: #014464;
+    background: -moz-linear-gradient(top, #0c5f85, #0b5273 50%, #024869 51%, #003853);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #0c5f85), color-stop(.5, #0b5273), color-stop(.51, #024869), to(#003853));
+}
+
+/* WHILE BEING CLICKED */
+.button:active {
+    -moz-box-shadow: 0 2px 6px black;
+    -webkit-box-shadow: 0 2px 6px black;
+}
+
+/* **************** */
+/*  Overlay styles  */
+/* **************** */
+/* From: http://stackoverflow.com/questions/9724035/how-can-one-create-an-overlay-in-css */
+
+.overlay {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+ <!--   background-color:rgba(0, 0, 0, 0.85);
+    background: url(data:;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAABl0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuNUmK/OAAAAATSURBVBhXY2RgYNgHxGAAYuwDAA78AjwwRoQYAAAAAElFTkSuQmCC) repeat scroll transparent\9;
+ -->   z-index:9999;
+    color:white;
+}
+
+.overlay {
+    text-align: center;
+}
+
+.overlay:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -0.25em;
+}
+
+.txt {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 10px 15px;
+    position:relative;
+    font-weight:bold;
+    color: black;
+}
+
+/* *************** */
+/*  Spinner layout  */
+/* *************** */
+/* Layout from http://tobiasahlin.com/spinkit/ */
+
+.spinner {
+    margin: 100px auto;
+    width: 32px;
+    height: 32px;
+    position: relative;
+}
+
+.cube1, .cube2 {
+    background-color: #F05033; /* Matches Git-logo */
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    -webkit-animation: cubemove 1.8s infinite ease-in-out;
+    animation: cubemove 1.8s infinite ease-in-out;
+}
+
+.cube2 {
+    -webkit-animation-delay: -0.9s;
+    animation-delay: -0.9s;
+}
+
+@-webkit-keyframes cubemove {
+    25% { -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5) }
+    50% { -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg) }
+    75% { -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5) }
+    100% { -webkit-transform: rotate(-360deg) }
+}
+
+@keyframes cubemove {
+    25% {
+        transform: translateX(42px) rotate(-90deg) scale(0.5);
+        -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5);
+    } 50% {
+          transform: translateX(42px) translateY(42px) rotate(-179deg);
+          -webkit-transform: translateX(42px) translateY(42px) rotate(-179deg);
+      } 50.1% {
+            transform: translateX(42px) translateY(42px) rotate(-180deg);
+            -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg);
+        } 75% {
+              transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+              -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+          } 100% {
+                transform: rotate(-360deg);
+                -webkit-transform: rotate(-360deg);
+            }
+}

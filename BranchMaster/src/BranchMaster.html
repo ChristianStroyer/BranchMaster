@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script src="d3.min.js" charset="utf-8"></script>
+    <script src="jquery-1.11.1.min.js" charset="utf-8"></script>
+    <script src="chosen.jquery.min.js" type="text/javascript"></script>
+    <script src="branchmaster_server.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="chosen.min.css">
+    <link rel="stylesheet" href="branchmaster.css">
+</head>
+
+<body>
+<div class="container">
+    <header class="header">
+
+    <div class="control-wrapper">
+            <div class="controls">
+             <div id="reposelect"><span id="homedir"></span>
+                 <select id="dirselect" data-placeholder="Navigate..." class="chosen-search_contains" style="width:150px;" tabindex="4">
+                      <option value=""></option>
+                  </select>
+             </div>
+
+             <div id="branchchooser" style="width: 100%;">
+                 <div style="margin-right: 210px;">
+                     <div style="width:100%; box-sizing: border-box; float: left;">
+                        <select id="branchselect" data-placeholder="Choose branches..." class="chosen-search_contains" multiple style="width:100%; margin-right:200px;" tabindex="4">
+                            <option value=""></option>
+                        </select>
+                     </div>
+                 </div>
+                 <div style="vertical-align: bottom">
+                    <button id = "btnCalc" class="button">Build tree</button>
+                 </div>
+            </div>
+            </div>
+
+            <div class="title">
+                <div><img src="Git-Icon-1788C.png"></div>
+                <div id="name">BranchMaster
+                    <div id="version"></div>
+                </div>
+
+            </div>
+    </div>
+    </header>
+
+    <section class="content">
+        <div class="content-body" style="position: relative">
+            <div id="graph"></div>
+            <div class="overlay">
+                <div class="txt">
+                    <div class="errortxt">test</div>
+                    <div class="spinner">
+                        <div class="cube1"></div>
+                        <div class="cube2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+
+
+    var data;
+    var branches;
+
+    $(document).ready(function() {
+        $("div.overlay").hide();
+
+        $("#btnCalc").click(onBuildTreeClick);
+
+        $("#dirselect").chosen().change( function() {
+            var dir = $("#dirselect").val();
+            dirNavigate(dir);
+        });
+
+        d3.select(window).on('resize', resize);
+
+        dirNavigate("");
+
+   //     window.onbeforeunload = confirmExit;
+
+        function confirmExit(){
+            return '';
+        }
+    });
+
+    function overlay_spinner() {
+        // Show overlay, but hide all
+        $("div.overlay").show();
+        $('.spinner').hide();
+        $('.errortxt').hide();
+        $('.errortxt').html("");
+        $('body').css('cursor', 'progress');
+        d3.select("#graph").selectAll('svg').remove();
+
+        // Fade in spinner
+        $('.spinner').fadeIn("fast");
+    }
+
+    function overlay_hide() {
+        $('body').css('cursor', 'auto');
+        $("div.overlay").fadeOut("fast");
+    }
+
+    function overlay_error(txt) {
+        // Show overlay, but hide all
+        $('body').css('cursor', 'auto');
+        $("div.overlay").show();
+        $('.spinner').hide();
+        $('.errortxt').hide();
+
+        // Fade in error text
+        $('.errortxt').html("ERROR "+txt);
+        $('.errortxt').fadeIn("fast");
+    }
+
+    function onBuildTreeClick() {
+        overlay_spinner();
+        var branches = $("#branchselect").val();
+        var branches_json = JSON.stringify(branches);
+        /*
+        $.ajax({
+            type: "POST",
+            url: "http://localhost:8080/gittree?callback=?",
+            data: branches_json
+        }).done(function (msg) {
+            if (success_callback != null)
+                success_callback(msg);
+        }).fail(function (jqXHR, textStatus) {
+            alert("Request failed: " + textStatus);
+            if (fail_callback != null)
+                fail_callback(textStatus);
+        });
+
+
+
+        $.getJSON( "http://localhost:8080/gittree?callback=?", branches_json )
+                .done(function( json ) {
+                    console.log( "JSON Data: " + json );
+                    overlay_hide();
+                    data = json;
+                    draw();
+                })
+                .fail(function( jqxhr, textStatus, error ) {
+                    var err = textStatus + ", " + error+" "+jqxhr.statusCode();
+                    console.log( "Request Failed: " + err );
+                });
+*/
+        d3.json("http://localhost:8101/gittree",  function(error, json) {
+            if (error)  {
+                overlay_error(error);
+                console.warn(error);
+                return;
+            }
+            overlay_hide();
+            data = json;
+            draw();
+            console.log("data: "+json);
+        })
+                .header("Content-Type","application/x-www-form-urlencoded")
+                .send("POST","branches="+branches_json);
+    }
+
+    function dirNavigate(navigate) {
+
+        branchmaster.server.dir(navigate, test,test);
+
+        d3.json("http://localhost:8101/dir", function(error, json) {
+            if (error) return console.warn(error);
+            dirSuccess(json);
+        })     .header("Content-Type","application/x-www-form-urlencoded")
+                .send("POST","navigate="+navigate);
+    }
+
+
+    function test(msg) {
+        console.log("msg: "+msg);
+    }
+
+    function dirSuccess(json) {
+        var versionDiv = document.getElementById('version');
+        if(versionDiv.innerHTML=="")
+            versionDiv.innerHTML = "version "+json.version;
+
+        var sel = document.getElementById('homedir');
+        sel.innerHTML = json.homedir;
+
+        var sel = document.getElementById('dirselect');
+        sel.innerHTML = "";
+        var option = document.createElement("option");
+        option.text = "";
+        sel.add(option);
+
+        for(var i in json.dirs) {
+            var option = document.createElement("option");
+            option.text = json.dirs[i];
+            sel.add(option);
+        }
+        $("#dirselect").trigger("chosen:updated");
+
+        if (json.gitdir && json.branches!=null)
+            showBranchSuccess(json.branches,json.selection);
+        else {
+            $("#branchchooser").fadeOut();
+            d3.select("#graph").selectAll('svg').remove();
+        }
+    }
+
+    function showBranchSuccess(branches, selection) {
+
+        $("#branchchooser").fadeIn();
+        var config = {
+            '.chosen-select'           : {},
+            '.chosen-select-deselect'  : {allow_single_deselect:true},
+            '.chosen-select-no-single' : {disable_search_threshold:10},
+            '.chosen-select-no-results': {no_results_text:'Oops, nothing found!'},
+            '.chosen-select-width'     : {width:"95%"},
+            '.chosen-search_contains'  : {search_contains:true, width:"100%"}
+        };
+        for (var selector in config) {
+            $(selector).chosen(config[selector]);
+        }
+
+        var sel = document.getElementById('branchselect');
+        sel.innerHTML = "";
+        for(var i in branches) {
+            var option = document.createElement("option");
+            option.text = branches[i];
+            sel.add(option);
+        }
+        if(selection!=null)
+            $("#branchselect").val(selection);
+
+        $("#branchselect").trigger("chosen:updated");
+
+
+    }
+
+    var svg   = null;
+    var force = null;
+
+    function draw() {
+        d3.select("#graph").selectAll('svg').remove();
+
+        var margin = 0;
+        var width = parseInt(d3.select("#graph").style("width")) - margin * 2;
+        var height = parseInt(d3.select("#graph").style("height")) - margin * 2;
+        console.log("init: " + width + " , " + height);
+
+        var color = d3.scale.category10();
+
+        var commitcolor = d3.scale.linear()
+                .domain([1, 100])
+                .range(["black", "red"]);
+
+        svg = d3.select("#graph").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("id", "svg");
+
+        svg.append("svg:defs").selectAll("marker")
+                .data(["arrow"])
+                .enter().append("svg:marker")
+                .attr("id", String)
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 0)
+                .attr("refY", 0)
+                .attr("markerWidth", 6)
+                .attr("markerHeight", 6)
+                .attr("orient", "auto")
+                .append("svg:path")
+                .attr("d", "M0,-5L10,0L0,5");
+
+        force = d3.layout.force()
+                .nodes(data.nodes)
+                .links(data.links)
+                .gravity(0.1)
+                .distance(100)
+                .charge(function (d) {
+                    return (d.inner ? -100 : -1500)
+                })
+                .size([width, height])
+                .linkStrength(0.5)
+                .start();
+
+        var link = svg.selectAll(".link")
+                .data(data.links)
+                .enter().append("g")
+                .attr("class", "link");
+
+        link.append("line")
+                .style("stroke-width", function (d) {
+                    return 1;
+                });
+
+        link.append("text")
+                .text(function (d) {
+                    return d.commits
+                })
+                .style("fill", function (d) {
+                    return commitcolor(d.commits);
+                });
+
+
+        var node = svg.selectAll(".node")
+                .data(data.nodes)
+                .enter().append("g")
+                .attr("class", "node")
+                .call(force.drag);
+
+        node.append("circle")
+                .attr("r", 5)
+                .style("fill", function (d) {
+                    return color((d.inner ? 1 : 2));
+                });
+
+        node.append("text")
+                .attr("dy", function (d) {
+                    return (d.inner ? "-0.75em" : "-1.5em")
+                })
+                .text(function (d) {
+                    name = d.name;
+                    if(d.names && d.names.length>0) {
+                        name = d.names[0];
+                        if (d.names.length > 1)
+                            name += "...";
+                    }
+                    return (d.inner ? d.date : name)
+                });
+
+        force.on("tick", function () {
+
+// Push sources up and targets down to form a weak tree.
+            var k1 = 10 * force.alpha();
+            data.links.forEach(function (d, i) {
+                //console.log(Math.round(d.source.y)+";"+Math.round(d.target.y)+" -> "+Math.round(d.source.y+k1)+";"+Math.round(d.target.y-k1))
+                d.source.y += k1;
+                d.target.y -= k1 * 3
+            });
+
+// Pushes named nodes to the top
+            var k2 = 0 * 0.025 * force.alpha();
+            data.nodes.forEach(function (d, i) {
+                if (!d.inner) {
+                    d.y += (30 - d.y) * k2;
+                }
+            });
+
+// Limit link to radius of node
+            link.selectAll("line").attr("d", function (d) {
+                var nodeMargin = 25;
+                // calculate new link endpoint for both source and target
+                // with specified margin
+                var sourceX = d.source.x,
+                        sourceY = d.source.y,
+                        targetX = d.target.x,
+                        targetY = d.target.y;
+
+                var X = Math.abs(targetX - sourceX);
+                var Y = Math.abs(targetY - sourceY);
+                var R = Math.sqrt(X * X + Y * Y);
+                var xMargin = X * nodeMargin / R;
+                var yMargin = Y * nodeMargin / R;
+
+                if (sourceX > targetX) {
+                    sourceX = sourceX - xMargin,
+                            targetX = targetX + xMargin / 2;
+                }
+                else {
+                    sourceX = sourceX + xMargin,
+                            targetX = targetX - xMargin / 2;
+                }
+
+                if (sourceY > targetY) {
+                    sourceY = sourceY - yMargin,
+                            targetY = targetY + yMargin / 2;
+                }
+                else {
+                    sourceY = sourceY + yMargin,
+                            targetY = targetY - yMargin / 2;
+                }
+                d.x1 = sourceX;
+                d.y1 = sourceY;
+                d.x2 = targetX;
+                d.y2 = targetY;
+            })
+                    .attr("x1", function (d) {
+                        return d.x1;
+                    })
+                    .attr("y1", function (d) {
+                        return d.y1;
+                    })
+                    .attr("x2", function (d) {
+                        return d.x2;
+                    })
+                    .attr("y2", function (d) {
+                        return d.y2;
+                    })
+                    .attr("marker-end", "url(#arrow)");
+
+
+            link.selectAll("text").attr("x", function (d) {
+                return (d.source.x + d.target.x) / 2;
+            })
+                    .attr("y", function (d) {
+                        return (d.source.y + d.target.y) / 2;
+                    });
+
+            node.attr("transform", function (d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+        });
+    }
+
+    function resize() {
+
+        var margin = 0;
+        var width = parseInt(d3.select("#graph").style("width")) - margin*2;
+        var height = parseInt(d3.select("#graph").style("height")) - margin*2;
+
+        if(svg)
+            svg.attr("width", width).attr("height", height);
+        if(force)
+        force.size([width, height]).resume();
+
+    }
+
+
+</script>
+
+</body>
+</html>
