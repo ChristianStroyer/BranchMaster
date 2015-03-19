@@ -10,6 +10,7 @@
             </manifest>
             <fileset dir="../bin"/>
             <zipfileset excludes="META-INF/*.SF" src="../lib/json-simple-1.1.1.jar"/>
+        	<zipfileset excludes="META-INF/*.SF" src="../lib/commons-exec-1.3.jar"/>
         </jar>
     </target>
 </project>
