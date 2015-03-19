@@ -1,9 +1,14 @@
 package com.blubi.branchmaster.commandline;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.PumpStreamHandler;
 
 import com.blubi.branchmaster.Main;
 
@@ -13,10 +18,30 @@ public abstract class AbstractCommandLineRunner {
 	private static long stat_total_calls = 0;
 	
 	File homedir = null;
-	
-	
+		
 	public AbstractCommandLineRunner(File homedir) {
 		this.homedir = homedir;
+	}
+
+	public static int run2(String command) {
+		try {
+			ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+		    PumpStreamHandler psh = new PumpStreamHandler(stdout);
+		    CommandLine cl = CommandLine.parse(command);
+		    DefaultExecutor exec = new DefaultExecutor();
+		    exec.setStreamHandler(psh);
+		    int exitValue = exec.execute(cl);
+		    System.out.println(stdout.toString());
+		    return exitValue;	    	
+		} catch (Exception e)  {
+			System.out.println(e.getMessage());
+			//return handleException(e);
+			return -1;
+		}
+	}
+
+	public static void main(String[] args) {
+		run2("git --hel");
 	}
 	
 	protected int run(String command) {
@@ -41,7 +66,9 @@ public abstract class AbstractCommandLineRunner {
 	        
 	        return exitCode;
 
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e)  {
+			return handleException(e);
+		} catch (InterruptedException e) {
 			return handleException(e);
 		}		
 	}
