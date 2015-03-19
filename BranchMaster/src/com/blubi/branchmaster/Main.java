@@ -16,7 +16,7 @@ import external.com.centerkey.utils.BareBonesBrowserLaunch;
 
 public class Main {
 
-	final static String version = "0.9";
+	final static String version = "1.0.0";
 	final static int DEFAULT_PORT = 8101;
 	
 	public static boolean stop = false;
