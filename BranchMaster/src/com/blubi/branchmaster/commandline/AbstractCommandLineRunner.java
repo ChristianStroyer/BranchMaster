@@ -1,16 +1,11 @@
 package com.blubi.branchmaster.commandline;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
-
-import com.blubi.branchmaster.Main;
 
 public abstract class AbstractCommandLineRunner {
 
