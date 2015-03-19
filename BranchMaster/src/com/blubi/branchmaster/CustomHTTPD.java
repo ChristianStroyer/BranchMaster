@@ -15,6 +15,7 @@ import external.fi.iki.elonen.NanoHTTPD;
 
 public class CustomHTTPD extends NanoHTTPD {
 
+	private static String ASSETS_FOLDER = "/web_assets";
 	public static int port;
 	
 	public CustomHTTPD(int port)throws IOException {
@@ -109,7 +110,7 @@ public class CustomHTTPD extends NanoHTTPD {
    }
 
 	private Response serveFile(String uri) {		
-		InputStream stream = getClass().getResourceAsStream(uri);
+		InputStream stream = getClass().getResourceAsStream(ASSETS_FOLDER+uri);
         if (stream == null) {
             return new Response(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Fatal - Not Found: "+uri);
         }
@@ -146,21 +147,5 @@ public class CustomHTTPD extends NanoHTTPD {
 
 		
 	} 
-	
-//   public static void main( String[] args ) {	   
-//	   try
-//       {
-//           new CustomHTTPD(8080).start();
-//       }
-//       catch( IOException ioe )
-//       {
-//           System.err.println( "Couldn't start server:\n" + ioe );
-//           System.exit( -1 );
-//       }
-//       System.out.println( "Listening on port 8080. Hit Enter to stop.\n" );
-//       try { System.in.read(); } catch( Throwable t ) {
-//           System.out.println("read error");
-//       };
-//   }
 
 }
