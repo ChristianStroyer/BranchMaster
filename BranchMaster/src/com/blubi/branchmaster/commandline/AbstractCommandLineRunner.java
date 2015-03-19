@@ -22,14 +22,12 @@ public abstract class AbstractCommandLineRunner {
 		try {
 			LogOutputStream outStrm = new LogOutputStream() {
 			    @Override protected void processLine(String line, int level) {
-			    	System.out.println("out: "+line+"; "+level);
 		        handle(line);
 		      }			
 			};
 			
 			LogOutputStream errStrm = new LogOutputStream() {
 			    @Override protected void processLine(String line, int level) {
-			    	System.out.println("err: "+line+"; "+level);
 		        handleErr(line);
 		      }
 			};
